@@ -1,0 +1,133 @@
+= 在 WSL 中安装 Kind Kubernets
+
+Kind 的官方定义是：
+
+> kind 是使用 Docker 容器 “节点” 运行本地 Kubernetes 群集的工具。 > > kind 主要用于测试 Kubernetes 本身，但可用于本地开发或 CI。
+
+换句话说，Kind 是在 Windows 10 中搭建 Kuberentes 比较方便的方式。安装 Kind，需要以下的环境配置：
+
+- 一个运行在 WSL 2 的 Ubuntu，其他发行版本也可以
+- 安装 Docker 和 Docker Compose
+
+对于 WSL 2 和 Ubuntu 环境的安装设置，可以查看微软的官方文档，这里就不进行额外的阐述了：https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+我们从安装完成 WSL 2 和 Ubuntu 之后的操作步骤进行介绍。
+
+== （可选）设置 WSL 的内存占用大小
+
+如果你计算机的内存比较小，在开始之前，可以先适当的调整 WSL 的内存占用：
+
+.%UserProfile%\.wslconfig
+[source,ini]
+----
+include::wslconfig.ini[]
+
+----
+
+NOTE: 参考来源：link:https://github.com/microsoft/WSL/issues/4166#issuecomment-526725261[]
+
+== Cgroup 配置
+
+设置 WSL 系统中的 Systemd 和 Cgroup 配置：
+
+.wsl-2-cgoup-setup.sh
+[source,bash]
+----
+include::wsl-2-cgoup-setup.sh[]
+
+----
+
+NOTE: 参考来源： link:https://github.com/microsoft/WSL/issues/4189#issuecomment-518277265[]
+
+NOTE: 参考来源： link:https://web.plus-idea.net/2019/07/docke-cgroups-mount-destination/[]
+
+== 安装 Docker 和 Docker Compose
+
+WSL 中的 `docker.io` 有运行问题，只能使用 Docker CE 运行。
+
+.wsl-2-docker-ce-install.sh
+[source,bash]
+----
+include::wsl-2-docker-ce-install.sh[]
+
+----
+
+在 PowerShell 里面关闭 WSL，然后重新打开 WSL：
+
+.wsl-terminate.ps1
+[source,powershell]
+----
+include::wsl-terminate.ps1[]
+
+----
+
+启动 Docker：
+
+.wsl-2-restart-docker.sh
+[source,bash]
+----
+include::wsl-2-restart-docker.sh[]
+
+----
+
+NOTE: 参考资料：link:https://docs.docker.com/engine/install/ubuntu/[]
+
+== 安装 `kind` 和 `kubectl`
+
+安装 `kind` 命令并激活命令的自动补全：
+
+.wsl-2-kind-cli-install.sh
+[source,bash]
+----
+include::wsl-2-kind-cli-install.sh[]
+
+----
+
+安装 `kubectl` 命令并激活命令的自动补全：
+
+.kubectl.install.sh
+[source,bash]
+----
+include::kubectl.install.sh[]
+
+----
+
+== 使用 Kind 启动 Kubernetes
+
+Kind 安装只需要使用 `kind create cluster --name wslkind` 即可完成，但是为了方便后续的 Ingress 安装，需要在此基础之上增加一些配置：
+
+.wsl-2-kind.create.sh
+[source,bash]
+----
+include::wsl-2-kind.create.sh[]
+----
+
+== 安装 Ingress Controller
+
+Nginx Ingress Controller 安装非常容易：
+
+.nginx-ingress.install.sh
+[source,bash]
+----
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+----
+
+Kind 还支持其他类型的 Ingress Controller：
+
+. Ambassador
+. Contour
+
+link:https://kind.sigs.k8s.io/docs/user/ingress/#ingress[]
+
+到此，你可以在你本地的 WSL 中开始使用 Kubernetes 了。
+
+你还可以为你的 Kind 安装 Helm 增加一些服务。
+
+== 安装 Helm
+
+.helm.install.sh
+[source,bash]
+----
+include::helm.install.sh[]
+
+----
