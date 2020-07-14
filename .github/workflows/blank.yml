@@ -13,7 +13,7 @@ jobs:
       uses: actions/checkout@v2
     - name: 🐋 Get build container
       id: adoc
-      uses: asciidoctor/docker-asciidoctor:latest
+      uses: "tonynv/asciidoctor-action@master"
       with:
         program: "make html"
     - name: ⌚ Print execution time
