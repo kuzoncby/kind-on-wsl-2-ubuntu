@@ -17,6 +17,7 @@ pdf: clean install
 .PHONY: html
 html: clean
 	asciidoctor -r asciidoctor-diagram README.adoc -D public
+	mv public/README.html public/index.html
 
 .PHONY: docker
 docker: clean
