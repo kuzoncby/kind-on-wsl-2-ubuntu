@@ -1,3 +1,21 @@
+:doctype: book
+:toc: left
+:icons: font
+:toclevels: 5
+:numbered:
+:hardbreaks:
+:sectlinks:
+:sectanchors:
+:experimental:
+:sectnums: true
+:lang: zh-Hans
+:revnumber: {docdatetime}
+:favicon: https://kuzoncby.github.io/icon.png
+:source-highlighter: rouge
+:rouge-theme: molokai
+:docinfo: shared
+:data-uri:
+
 = 在 WSL 中安装 Kind Kubernets
 
 Kind 的官方定义是：
@@ -9,7 +27,7 @@ Kind 的官方定义是：
 - 一个运行在 WSL 2 的 Ubuntu，其他发行版本也可以
 - 安装 Docker 和 Docker Compose
 
-对于 WSL 2 和 Ubuntu 环境的安装设置，可以查看微软的官方文档，这里就不进行额外的阐述了：https://docs.microsoft.com/en-us/windows/wsl/install-win10
+对于 WSL 2 和 Ubuntu 环境的安装设置，可以查看微软的官方文档，这里就不进行额外的阐述了：link:https://docs.microsoft.com/en-us/windows/wsl/install-win10[]
 
 我们从安装完成 WSL 2 和 Ubuntu 之后的操作步骤进行介绍。
 
