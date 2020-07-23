@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
+<link rel="icon" type="image/png" href="https://kuzoncby.github.io/icon.png">
 <title>在 WSL 中安装 Kind Kubernets</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -435,10 +436,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="book toc2 toc-left">
 <div id="header">
 <h1>在 WSL 中安装 Kind Kubernets</h1>
+<div class="details">
+<span id="revnumber">version 2020-07-23 08:56:08 UTC</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_可选设置_wsl_的内存占用大小">1. （可选）设置 WSL 的内存占用大小</a></li>
+<li><a href="#_cgroup_配置">2. Cgroup 配置</a></li>
+<li><a href="#_安装_docker_和_docker_compose">3. 安装 Docker 和 Docker Compose</a></li>
+<li><a href="#_安装_kind_和_kubectl">4. 安装 <code>kind</code> 和 <code>kubectl</code></a></li>
+<li><a href="#_使用_kind_启动_kubernetes">5. 使用 Kind 启动 Kubernetes</a></li>
+<li><a href="#_安装_ingress_controller">6. 安装 Ingress Controller</a></li>
+<li><a href="#_安装_helm">7. 安装 Helm</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
@@ -467,7 +484,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 <div class="paragraph">
-<p>对于 WSL 2 和 Ubuntu 环境的安装设置，可以查看微软的官方文档，这里就不进行额外的阐述了：https://docs.microsoft.com/en-us/windows/wsl/install-win10</p>
+<p>对于 WSL 2 和 Ubuntu 环境的安装设置，可以查看微软的官方文档，这里就不进行额外的阐述了：<a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" class="bare">https://docs.microsoft.com/en-us/windows/wsl/install-win10</a></p>
 </div>
 <div class="paragraph">
 <p>我们从安装完成 WSL 2 和 Ubuntu 之后的操作步骤进行介绍。</p>
@@ -475,7 +492,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_可选设置_wsl_的内存占用大小">（可选）设置 WSL 的内存占用大小</h2>
+<h2 id="_可选设置_wsl_的内存占用大小"><a class="anchor" href="#_可选设置_wsl_的内存占用大小"></a><a class="link" href="#_可选设置_wsl_的内存占用大小">1. （可选）设置 WSL 的内存占用大小</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>如果你计算机的内存比较小，在开始之前，可以先适当的调整 WSL 的内存占用：</p>
@@ -483,17 +500,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="title">%UserProfile%\.wslconfig</div>
 <div class="content">
-<pre class="highlight"><code class="language-ini" data-lang="ini">[wsl2]
-memory = 4GB
-swap = 0
-localhostForwarding = true</code></pre>
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[wsl2]</span>
+<span class="py">memory</span> <span class="p">=</span> <span class="s">4GB</span>
+<span class="py">swap</span> <span class="p">=</span> <span class="s">0</span>
+<span class="py">localhostForwarding</span> <span class="p">=</span> <span class="s">true</span></code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 参考来源：<a href="https://github.com/microsoft/WSL/issues/4166#issuecomment-526725261" class="bare">https://github.com/microsoft/WSL/issues/4166#issuecomment-526725261</a>
@@ -504,7 +521,7 @@ localhostForwarding = true</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_cgroup_配置">Cgroup 配置</h2>
+<h2 id="_cgroup_配置"><a class="anchor" href="#_cgroup_配置"></a><a class="link" href="#_cgroup_配置">2. Cgroup 配置</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>设置 WSL 系统中的 Systemd 和 Cgroup 配置：</p>
@@ -512,16 +529,16 @@ localhostForwarding = true</code></pre>
 <div class="listingblock">
 <div class="title">wsl-2-cgoup-setup.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
-sudo mkdir /sys/fs/cgroup/systemd
-sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd</code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+<span class="nb">sudo mkdir</span> /sys/fs/cgroup/systemd
+<span class="nb">sudo </span>mount <span class="nt">-t</span> cgroup <span class="nt">-o</span> none,name<span class="o">=</span>systemd cgroup /sys/fs/cgroup/systemd</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 参考来源： <a href="https://github.com/microsoft/WSL/issues/4189#issuecomment-518277265" class="bare">https://github.com/microsoft/WSL/issues/4189#issuecomment-518277265</a>
@@ -533,7 +550,7 @@ sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd</code></
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 参考来源： <a href="https://web.plus-idea.net/2019/07/docke-cgroups-mount-destination/" class="bare">https://web.plus-idea.net/2019/07/docke-cgroups-mount-destination/</a>
@@ -544,7 +561,7 @@ sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd</code></
 </div>
 </div>
 <div class="sect1">
-<h2 id="_安装_docker_和_docker_compose">安装 Docker 和 Docker Compose</h2>
+<h2 id="_安装_docker_和_docker_compose"><a class="anchor" href="#_安装_docker_和_docker_compose"></a><a class="link" href="#_安装_docker_和_docker_compose">3. 安装 Docker 和 Docker Compose</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>WSL 中的 <code>docker.io</code> 有运行问题，只能使用 Docker CE 运行。</p>
@@ -552,30 +569,30 @@ sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd</code></
 <div class="listingblock">
 <div class="title">wsl-2-docker-ce-install.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
 
-sudo apt update
+<span class="nb">sudo </span>apt update
 
-sudo apt remove docker docker-engine docker.io containerd runc -y
+<span class="nb">sudo </span>apt remove docker docker-engine docker.io containerd runc <span class="nt">-y</span>
 
-sudo apt install \
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  gnupg-agent \
+<span class="nb">sudo </span>apt <span class="nb">install</span> <span class="se">\</span>
+  apt-transport-https <span class="se">\</span>
+  ca-certificates <span class="se">\</span>
+  curl <span class="se">\</span>
+  gnupg-agent <span class="se">\</span>
   software-properties-common
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+curl <span class="nt">-fsSL</span> https://download.docker.com/linux/ubuntu/gpg | <span class="nb">sudo </span>apt-key add -
 
-sudo add-apt-repository \
-  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+<span class="nb">sudo </span>add-apt-repository <span class="se">\</span>
+  <span class="s2">"deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="se">\</span><span class="s2">
+   </span><span class="si">$(</span>lsb_release <span class="nt">-cs</span><span class="si">)</span><span class="s2"> </span><span class="se">\</span><span class="s2">
+   stable"</span>
 
-sudo apt-get update
-sudo apt-get install docker-ce containerd.io docker-compose -y
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-ce containerd.io docker-compose <span class="nt">-y</span>
 
-sudo usermod -aG docker $USER</code></pre>
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -584,7 +601,8 @@ sudo usermod -aG docker $USER</code></pre>
 <div class="listingblock">
 <div class="title">wsl-terminate.ps1</div>
 <div class="content">
-<pre class="highlight"><code class="language-powershell" data-lang="powershell">wsl -t Ubuntu</code></pre>
+<pre class="rouge highlight"><code data-lang="powershell"><span class="nf">wsl</span><span class="w"> </span><span class="nt">-t</span><span class="w"> </span><span class="nx">Ubuntu</span><span class="w">
+</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -593,15 +611,15 @@ sudo usermod -aG docker $USER</code></pre>
 <div class="listingblock">
 <div class="title">wsl-2-restart-docker.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
-sudo service docker start</code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+<span class="nb">sudo </span>service docker start</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<div class="title">Note</div>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
 参考资料：<a href="https://docs.docker.com/engine/install/ubuntu/" class="bare">https://docs.docker.com/engine/install/ubuntu/</a>
@@ -612,7 +630,7 @@ sudo service docker start</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_安装_kind_和_kubectl">安装 <code>kind</code> 和 <code>kubectl</code></h2>
+<h2 id="_安装_kind_和_kubectl"><a class="anchor" href="#_安装_kind_和_kubectl"></a><a class="link" href="#_安装_kind_和_kubectl">4. 安装 <code>kind</code> 和 <code>kubectl</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>安装 <code>kind</code> 命令并激活命令的自动补全：</p>
@@ -620,17 +638,17 @@ sudo service docker start</code></pre>
 <div class="listingblock">
 <div class="title">wsl-2-kind-cli-install.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
-# Download kind cli
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-$(uname)-amd64
-chmod +x ./kind
-sudo mv ./kind /bin/kind
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+<span class="c"># Download kind cli</span>
+curl <span class="nt">-Lo</span> ./kind https://kind.sigs.k8s.io/dl/v0.8.1/kind-<span class="si">$(</span><span class="nb">uname</span><span class="si">)</span><span class="nt">-amd64</span>
+<span class="nb">chmod</span> +x ./kind
+<span class="nb">sudo mv</span> ./kind /bin/kind
 
-# Enable command completion
-kind completion bash &gt;kind.sh
-sudo mv kind.sh /etc/bash_completion.d/
+<span class="c"># Enable command completion</span>
+kind completion bash <span class="o">&gt;</span>kind.sh
+<span class="nb">sudo mv </span>kind.sh /etc/bash_completion.d/
 
-source ~/.bashrc</code></pre>
+<span class="nb">source</span> ~/.bashrc</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -639,23 +657,23 @@ source ~/.bashrc</code></pre>
 <div class="listingblock">
 <div class="title">kubectl.install.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
-# Download kubectl cli
-curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-chmod +x ./kubectl
-sudo mv ./kubectl /bin/kubectl
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+<span class="c"># Download kubectl cli</span>
+curl <span class="nt">-LO</span> https://storage.googleapis.com/kubernetes-release/release/<span class="si">$(</span>curl <span class="nt">-s</span> https://storage.googleapis.com/kubernetes-release/release/stable.txt<span class="si">)</span>/bin/linux/amd64/kubectl
+<span class="nb">chmod</span> +x ./kubectl
+<span class="nb">sudo mv</span> ./kubectl /bin/kubectl
 
-# Enable command completion
-kubectl completion bash &gt;kubectl.sh
-sudo mv kubectl.sh /etc/bash_completion.d/
+<span class="c"># Enable command completion</span>
+kubectl completion bash <span class="o">&gt;</span>kubectl.sh
+<span class="nb">sudo mv </span>kubectl.sh /etc/bash_completion.d/
 
-source ~/.bashrc</code></pre>
+<span class="nb">source</span> ~/.bashrc</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_使用_kind_启动_kubernetes">使用 Kind 启动 Kubernetes</h2>
+<h2 id="_使用_kind_启动_kubernetes"><a class="anchor" href="#_使用_kind_启动_kubernetes"></a><a class="link" href="#_使用_kind_启动_kubernetes">5. 使用 Kind 启动 Kubernetes</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Kind 安装只需要使用 <code>kind create cluster --name wslkind</code> 即可完成，但是为了方便后续的 Ingress 安装，需要在此基础之上增加一些配置：</p>
@@ -663,7 +681,7 @@ source ~/.bashrc</code></pre>
 <div class="listingblock">
 <div class="title">wsl-2-kind.create.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">cat &lt;&lt;EOF | kind create cluster --name wslkind --config=-
+<pre class="rouge highlight"><code data-lang="bash"><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | kind create cluster --name wslkind --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -682,13 +700,13 @@ nodes:
         hostPort: 443
         protocol: TCP
 
-EOF</code></pre>
+EOF</span></code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_安装_ingress_controller">安装 Ingress Controller</h2>
+<h2 id="_安装_ingress_controller"><a class="anchor" href="#_安装_ingress_controller"></a><a class="link" href="#_安装_ingress_controller">6. 安装 Ingress Controller</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Nginx Ingress Controller 安装非常容易：</p>
@@ -696,7 +714,7 @@ EOF</code></pre>
 <div class="listingblock">
 <div class="title">nginx-ingress.install.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">kubectl apply <span class="nt">-f</span> https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -724,19 +742,19 @@ EOF</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_安装_helm">安装 Helm</h2>
+<h2 id="_安装_helm"><a class="anchor" href="#_安装_helm"></a><a class="link" href="#_安装_helm">7. 安装 Helm</a></h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="title">helm.install.sh</div>
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
-curl https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz | tar xvz -C /tmp/ --exclude="*.cmd" --exclude="docs"
-sudo mv /tmp/linux-amd64/helm /bin/helm
+<pre class="rouge highlight"><code data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+curl https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz | <span class="nb">tar </span>xvz <span class="nt">-C</span> /tmp/ <span class="nt">--exclude</span><span class="o">=</span><span class="s2">"*.cmd"</span> <span class="nt">--exclude</span><span class="o">=</span><span class="s2">"docs"</span>
+<span class="nb">sudo mv</span> /tmp/linux-amd64/helm /bin/helm
 
-helm completion bash &gt;~/helm.sh
-sudo mv ~/helm.sh /etc/bash_completion.d/
+helm completion bash <span class="o">&gt;</span>~/helm.sh
+<span class="nb">sudo mv</span> ~/helm.sh /etc/bash_completion.d/
 
-source ~/.bashrc</code></pre>
+<span class="nb">source</span> ~/.bashrc</code></pre>
 </div>
 </div>
 </div>
@@ -744,8 +762,220 @@ source ~/.bashrc</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-07-23 08:34:33 UTC
+Version 2020-07-23 08:56:08 UTC<br>
+Last updated 2020-07-23 08:56:08 UTC
 </div>
 </div>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 </body>
 </html>
